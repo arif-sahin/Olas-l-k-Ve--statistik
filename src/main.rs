@@ -6,14 +6,36 @@ use std::ops::RangeInclusive;
 fn basit_rassal_ornekleme(mini: i32, maxi: i32, adet: i32) {
     let mut i: i32 = 0;
 
+    let mut r_numbers: Vec<i32> = Vec::new();
+
     let range = RangeInclusive::new(mini, maxi);
 
-    while i < adet {
-        let random_num = rand::thread_rng().gen_range(range.clone());
-        println!("{}", random_num);
+    if (maxi - mini +1) > adet{
+        while i < adet {
+            let random_num = rand::thread_rng().gen_range(range.clone());
 
-        i += 1;
+            if !r_numbers.contains(&random_num) {
+                r_numbers.push(random_num);
+            }
+            i += 1;
+        }
+
+        for random_num in r_numbers {
+            println!("{}", random_num);
+        }
+        
+    } else {
+        while i < adet {
+            let random_num = rand::thread_rng().gen_range(range.clone());
+            
+            println!("{}", random_num);
+                
+            i += 1;
+        }
     }
+
+    
+    
 
 }
 
@@ -35,7 +57,7 @@ fn main() {
 
     // rastegele sayı adedi
     let mut adet = String::new();
-    println!("İstenen rastegele sayi adedi: ");
+    println!("İstenen rastgele sayi adedi: ");
     stdin().read_line(&mut adet).expect("Failed");
     let adet:i32 = adet.trim().parse().expect("İnvalid"); 
     
