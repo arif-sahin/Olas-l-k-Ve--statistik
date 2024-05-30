@@ -77,11 +77,21 @@ where
     let mut alt_sinir_i32 = (value as f64 - 0.5) as f64;
     let mut toplam_frekans = 0;
     let mut toplam_oransal_frekans = 0;
+
+    let mut frekanslar: Vec<i32> = Vec::new();
+    let mut sinirlar: Vec<(f64, f64)> = Vec::new();
+    let mut eklenik_frekanslar: Vec<i32> = Vec::new();
+
     for _ in 0..k {
         let ust_sinir = alt_sinir_i32 +h;
         let frekans = arr.iter().filter(|&&x| (x as f64) >= alt_sinir_i32 && (x as f64) < ust_sinir).count() as i32;
         toplam_frekans += frekans;
         toplam_oransal_frekans += frekans;
+
+        sinirlar.push((alt_sinir_i32,ust_sinir));
+        frekanslar.push(frekans);
+        eklenik_frekanslar.push(toplam_frekans);
+
         println!(
             "{:?} \t {:?} \t {:?} \t\t {} \t\t\t {}/{} \t\t\t {}/{}",
             alt_sinir_i32, ust_sinir, frekans,toplam_frekans, frekans, n, toplam_oransal_frekans, n
@@ -89,6 +99,24 @@ where
         value = value + h_int;
         alt_sinir_i32 = (value as f64 - 0.5) as f64;
     }
+
+    // Q1 hesaplama
+    let q1_index = n as f64 / 4.0;
+    let q1_sinif = eklenik_frekanslar.iter().position(|&x| x as f64 >= q1_index).unwrap();
+    let q1_n1 = if q1_sinif == 0 { 0 } else { eklenik_frekanslar[q1_sinif - 1] };
+    let q1_f = frekanslar[q1_sinif];
+    let q1_l = sinirlar[q1_sinif].0;
+    let q1 = q1_l + (((q1_index - q1_n1 as f64) * h) / q1_f as f64);
+
+    // Q3 hesaplama
+    let q3_index = 3.0 * n as f64 / 4.0;
+    let q3_sinif = eklenik_frekanslar.iter().position(|&x| x as f64 >= q3_index).unwrap();
+    let q3_n1 = if q3_sinif == 0 { 0 } else { eklenik_frekanslar[q3_sinif - 1] };
+    let q3_f = frekanslar[q3_sinif];
+    let q3_l = sinirlar[q3_sinif].0;
+    let q3 = q3_l + (((q3_index - q3_n1 as f64) * h) / q3_f as f64);
+
+    println!("Q1: {:.4}, Q3: {:.4}", q1, q3);
 }
 
 fn frekans_tablosu_f64(arr: Vec<f64>)
@@ -117,24 +145,52 @@ where
     let mut alt_sinir_f64 = min - 0.05;
     let mut toplam_frekans = 0;
     let mut toplam_oransal_frekans = 0;
+
+    let mut frekanslar: Vec<i32> = Vec::new();
+    let mut sinirlar: Vec<(f64, f64)> = Vec::new();
+    let mut eklenik_frekanslar: Vec<i32> =Vec::new(); 
+
     for _ in 0..k as i32 {
         let ust_sinir = alt_sinir_f64 + h;
-        let frekans = arr.iter().filter(|&&x| x >= alt_sinir_f64 && x < ust_sinir).count();
+        let frekans = arr.iter().filter(|&&x| x >= alt_sinir_f64 && x < ust_sinir).count() as i32;
         toplam_frekans += frekans;
         toplam_oransal_frekans += frekans;
+
+        sinirlar.push((alt_sinir_f64,ust_sinir));
+        frekanslar.push(frekans);
+        eklenik_frekanslar.push(toplam_frekans);
+
         println!(
             "{:.2} \t {:.2} \t\t {frekans}\t\t {toplam_frekans} \t\t\t {frekans}/{n} \t\t\t{toplam_oransal_frekans}/{n}", 
             alt_sinir_f64, alt_sinir_f64 + h
         );
         alt_sinir_f64 = alt_sinir_f64 + h;
     }
+
+    //Q1 Hesaplama
+    let q1_index = n as f64 / 4.0;
+    let q1_sinif = eklenik_frekanslar.iter().position(|&x| x as f64 >= q1_index).unwrap();
+    let q1_n1 = if q1_sinif == 0 {0} else {eklenik_frekanslar[q1_sinif - 1]};
+    let q1_f = frekanslar[q1_sinif];
+    let q1_l = sinirlar[q1_sinif].0;
+    let q1 = q1_l + (((q1_index - q1_n1 as f64) * h) / q1_f as f64);
+
+    // Q3 hesaplama
+    let q3_index = 3.0 * n as f64 / 4.0;
+    let q3_sinif = eklenik_frekanslar.iter().position(|&x| x as f64 >= q3_index).unwrap();
+    let q3_n1 = if q3_sinif == 0 { 0 } else { eklenik_frekanslar[q3_sinif - 1] };
+    let q3_f = frekanslar[q3_sinif];
+    let q3_l = sinirlar[q3_sinif].0;
+    let q3 = q3_l + (((q3_index - q3_n1 as f64) * h) / q3_f as f64);
+
+    println!("Q1: {:.2}, Q3: {:.}", q1, q3);
 }
 
 fn armegeo_i32(arr: &[i32]) {
     //Aritmetik Ortalama
     let data: Vec<f64> = arr.iter().map(|&x| x as f64).collect();
     let aritmetik_ort = data.clone().mean();
-    println!("Aritmetik Ortalam: {:.2}",aritmetik_ort);
+    println!("Aritmetik Ortalam: {:.3}",aritmetik_ort);
 
     //Medyan
     let median_data = if arr.len() % 2 == 0 {
@@ -157,10 +213,10 @@ fn armegeo_i32(arr: &[i32]) {
     println!("Mod: {:?}",mode_data.unwrap());
 
     let geometrik_ort = data.clone().geometric_mean();
-    println!("Geometrik Ortalama: {:.2}", geometrik_ort);
+    println!("Geometrik Ortalama: {:.3}", geometrik_ort);
 
     let harmonik_ort = data.clone().harmonic_mean();
-    println!("Harmonik Ortalama: {:.2}", harmonik_ort);
+    println!("Harmonik Ortalama: {:.3}", harmonik_ort);
     
     // n 
     let n = arr.len() as f64;
